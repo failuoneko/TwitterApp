@@ -6,24 +6,49 @@
 //
 
 import UIKit
+import SnapKit
 
 class MainTabController: UITabBarController {
     
     // MARK: - Properties
     
+    let actionButton: UIButton = {
+        let button = UIButton(type: .system)
+        let configuration = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage(UIImage(systemName: "text.badge.plus", withConfiguration: configuration), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = .customBlue
+        button.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureViewControllers()
+        configureUI()
         
     }
     
     // MARK: - Selectors
     
+    @objc func actionButtonTapped() {
+        
+    }
     
     // MARK: - Helpers
+    
+    func configureUI() {
+        view.addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(70)
+            make.right.equalToSuperview().inset(20)
+            make.size.equalTo(60)
+        }
+        actionButton.layer.cornerRadius = 60 / 2
+    }
     
     func configureViewControllers() {
         
