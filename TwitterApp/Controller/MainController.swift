@@ -7,10 +7,19 @@
 
 import UIKit
 import SnapKit
+import Firebase
 
 class MainTabController: UITabBarController {
     
     // MARK: - Properties
+    
+    var user: User? {
+        didSet {
+            guard let nav = viewControllers?[0] as? UINavigationController else { return }
+            guard let feed = nav.viewControllers.first as? FeedController else { return }
+            feed.user = user
+        }
+    }
     
     let actionButton: UIButton = {
         let button = UIButton(type: .system)
@@ -26,16 +35,51 @@ class MainTabController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configureViewControllers()
-        configureUI()
+//        logOut()
+        view.backgroundColor = .customBlue
+        authUser()
         
     }
+    
+    // MARK: - API
+    
+    func fetchUser() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        UserService.shared.fetchUser(uid: uid) { user in
+            self.user = user
+        }
+    }
+    
+    func authUser() {
+        if Auth.auth().currentUser == nil {
+            presentLoginScreen()
+            print("DEBUG: is not logged in")
+        } else {
+            configureViewControllers()
+            configureUI()
+            fetchUser()
+            print("DEBUG: is logged in")
+        }
+    }
+    
+    func logOut() {
+        do {
+            try Auth.auth().signOut()
+            print("DEBUG: log out")
+        } catch {
+            print("DEBUG: Error log out..:\(error.localizedDescription)")
+        }
+    }
+    
+
     
     // MARK: - Selectors
     
     @objc func actionButtonTapped() {
-        
+        guard let user = user else { return }
+        let nav = UINavigationController(rootViewController: PostTweetViewController(user: user))
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
     }
     
     // MARK: - Helpers
@@ -46,13 +90,22 @@ class MainTabController: UITabBarController {
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(70)
             make.right.equalToSuperview().inset(20)
             make.size.equalTo(60)
+            actionButton.layer.cornerRadius = 60 / 2
         }
-        actionButton.layer.cornerRadius = 60 / 2
+    }
+    
+    func presentLoginScreen() {
+        DispatchQueue.main.async {
+            let controller = LoginController()
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true, completion: nil)
+        }
     }
     
     func configureViewControllers() {
         
-        let feed = FeedController()
+        let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
         let feedNav = configureNavigationController(image: UIImage(systemName: "house"), rootViewcontroller: feed)
         
         let explore = ExploreController()

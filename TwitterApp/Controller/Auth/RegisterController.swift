@@ -6,8 +6,8 @@
 //
 
 import UIKit
-
-import UIKit
+import Firebase
+import FirebaseDatabase
 
 class RegisterController: UIViewController {
     // MARK: - Properties
@@ -15,6 +15,7 @@ class RegisterController: UIViewController {
     let imagePickerController = UIImagePickerController()
     
     private let addPhotoButtonSize = 150
+    private var profileImage: UIImage?
 
     private let addPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -111,6 +112,31 @@ class RegisterController: UIViewController {
     
     @objc func signUp() {
         
+        guard let profileImage = profileImage else {
+            print("DEBUG: no image")
+            return }
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        guard let fullname = fullnameTextField.text else { return }
+        guard let username = usernameTextField.text else { return }
+        
+        let creadentials = RegisterCredentials(profileImage: profileImage,
+                                               email: email,
+                                               password: password,
+                                               fullname: fullname,
+                                               username: username)
+        AuthService.shared.creatUser(credentials: creadentials) { error, ref in
+            print("DEBUG: sign up suceessful")
+            print("DEBUG: update user interface")
+            
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+            guard let mainTab = window.rootViewController as? MainTabController else { return }
+            mainTab.authUser()
+            
+            self.dismiss(animated: true, completion: nil)
+            
+        }
+        
     }
 
     @objc func showLoginPage() {
@@ -163,6 +189,7 @@ extension RegisterController: UIImagePickerControllerDelegate, UINavigationContr
         
         guard let image = info[.editedImage] as? UIImage else { return }
         self.addPhotoButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+        self.profileImage = image
         
         addPhotoButton.layer.borderColor = UIColor.white.cgColor
         addPhotoButton.layer.borderWidth = 3
