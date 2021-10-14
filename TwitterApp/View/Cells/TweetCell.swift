@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol TweetCellDelegate: AnyObject {
+    func profileImageViewTapped(_ cell: TweetCell)
+}
+
 class TweetCell: UICollectionViewCell {
     
     // MARK: - Properties
@@ -18,15 +22,7 @@ class TweetCell: UICollectionViewCell {
         }
     }
     
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.backgroundColor = .lightGray
-        imageView.snp.makeConstraints{ $0.size.equalTo(48) }
-        imageView.layer.cornerRadius = 48 / 2
-        return imageView
-    }()
+    weak var delegate: TweetCellDelegate?
     
     private let captionLabel: UILabel = {
         let label = UILabel()
@@ -34,6 +30,19 @@ class TweetCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.text = "test caption"
         return label
+    }()
+    
+    private lazy var profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .lightGray
+        imageView.snp.makeConstraints{ $0.size.equalTo(48) }
+        imageView.layer.cornerRadius = 48 / 2
+        let tap = UITapGestureRecognizer(target: self, action: #selector(profileImageViewTapped))
+        imageView.addGestureRecognizer(tap)
+        imageView.isUserInteractionEnabled = true
+        return imageView
     }()
     
     private lazy var commentButton: UIButton = {
@@ -82,10 +91,17 @@ class TweetCell: UICollectionViewCell {
     
     private let infoLabel = UILabel()
     
+    private let underlineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGroupedBackground
+        return view
+    }()
+    
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         backgroundColor = .white
         
         addSubview(profileImageView)
@@ -119,8 +135,8 @@ class TweetCell: UICollectionViewCell {
             make.centerX.equalToSuperview()
         }
         
-        let underlineView = UIView()
-        underlineView.backgroundColor = .systemGroupedBackground
+//        let underlineView = UIView()
+//        underlineView.backgroundColor = .systemGroupedBackground
         addSubview(underlineView)
         underlineView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
@@ -133,6 +149,10 @@ class TweetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     // MARK: - Selectors
+    
+    @objc func profileImageViewTapped() {
+        delegate?.profileImageViewTapped(self)
+    }
     
     @objc func commentButtonTapped() {
         
@@ -155,10 +175,11 @@ class TweetCell: UICollectionViewCell {
     
     func configure() {
         guard let tweet = tweet else { return }
-        captionLabel.text = tweet.caption
+        let viewModel = TweetViewModel(tweet: tweet)
         
-        profileImageView.kf.setImage(with: tweet.user.profileImageUrl)
-        infoLabel.text = tweet.user.username
+        captionLabel.text = tweet.caption
+        profileImageView.kf.setImage(with: viewModel.profileImageUrl)
+        infoLabel.attributedText = viewModel.userInfoText
     }
     
 }

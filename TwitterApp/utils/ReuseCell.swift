@@ -7,13 +7,13 @@
 
 import UIKit
 
-//extension UITableViewCell {
-//    static var id: String {
-//        return "\(Self.self)"
-//    }
-//}
+extension UICollectionReusableView {
+    static var id: String {
+        return "\(Self.self)"
+    }
+}
 
-extension UICollectionViewCell {
+extension UITableViewCell {
     static var id: String {
         return "\(Self.self)"
     }
