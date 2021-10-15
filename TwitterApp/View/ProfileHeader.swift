@@ -9,6 +9,7 @@ import UIKit
 
 protocol ProfileHeaderDelegate: AnyObject {
     func dismissal()
+    func editProfileFollow(_ header: ProfileHeader)
 }
 
 class ProfileHeader: UICollectionReusableView {
@@ -53,7 +54,7 @@ class ProfileHeader: UICollectionReusableView {
         return imageView
     }()
     
-    private lazy var editProfileFollowButton: UIButton = {
+    lazy var editProfileFollowButton: UIButton = {
         let button = UIButton()
         button.layer.borderColor = UIColor.customBlue.cgColor
         button.layer.borderWidth = 1.5
@@ -131,7 +132,7 @@ class ProfileHeader: UICollectionReusableView {
     }
     
     @objc func editProfileFollow() {
-        
+        delegate?.editProfileFollow(self)
     }
     
     @objc func followingLabelTapped() {

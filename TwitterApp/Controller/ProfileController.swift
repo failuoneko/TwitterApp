@@ -11,12 +11,12 @@ class ProfileController: UICollectionViewController {
     
     // MARK: - Properties
     
-    private let user: User
-
+    private var user: User
+    
     private var tweets: [Tweet] = [] {
         didSet { collectionView.reloadData() }
     }
-
+    
     // MARK: - Lifecycle
     
     init(user: User) {
@@ -33,6 +33,8 @@ class ProfileController: UICollectionViewController {
         
         configureUI()
         fetchUserTweets()
+        checkIsfollowed()
+        fetchUserStats()
         
     }
     
@@ -41,12 +43,12 @@ class ProfileController: UICollectionViewController {
         navigationController?.navigationBar.isHidden = true
         navigationController?.navigationBar.barStyle = .black
     }
-
+    
     // MARK: - Selectors
     
-
-
-
+    
+    
+    
     // MARK: - API
     
     func fetchUserTweets() {
@@ -54,10 +56,26 @@ class ProfileController: UICollectionViewController {
             self.tweets = tweets
         }
     }
-
+    
+    func checkIsfollowed() {
+        UserService.shared.checkIsFollowed(uid: user.uid) { isFollowed in
+            self.user.isUserFollowed = isFollowed
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func fetchUserStats() {
+        UserService.shared.fetchUserStats(uid: user.uid) { stats in
+            self.user.stats = stats
+            self.collectionView.reloadData()
+            print("DEBUG: followers: \(stats.followers)")
+            print("DEBUG: following: \(stats.following)")
+        }
+    }
+    
     
     // MARK: - Helpers
-
+    
     func configureUI() {
         collectionView.backgroundColor = .red
         collectionView.contentInsetAdjustmentBehavior = .never
@@ -111,7 +129,33 @@ extension ProfileController {
 // MARK: - ProfileHeaderDelegate
 
 extension ProfileController: ProfileHeaderDelegate {
+    
     func dismissal() {
         navigationController?.popViewController(animated: true)
     }
+    
+    func editProfileFollow(_ header: ProfileHeader) {
+        
+        if user.isCurrenUser {
+            print("DEBUG: show edit profile controller")
+            return
+        }
+        
+                
+        if user.isUserFollowed {
+            UserService.shared.unfollowUser(uid: user.uid) { error, ref in
+                self.user.isUserFollowed = false
+                self.collectionView.reloadData()
+//                header.editProfileFollowButton.setTitle("Follow", for: .normal)
+            }
+        } else {
+            UserService.shared.followUser(uid: user.uid) { error, ref in
+                self.user.isUserFollowed = true
+                self.collectionView.reloadData()
+//                header.editProfileFollowButton.setTitle("Following", for: .normal)
+
+            }
+        }
+    }
+    
 }

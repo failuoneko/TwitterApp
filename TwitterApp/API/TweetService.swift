@@ -15,7 +15,7 @@ struct TweetService {
         
         let values = ["uid": uid,
                       "caption":caption,
-                      "timestap": Int(NSDate().timeIntervalSince1970),
+                      "timestamp": Int(NSDate().timeIntervalSince1970),
                       "likes": 0,
                       "retweets": 0] as [String : Any]
         

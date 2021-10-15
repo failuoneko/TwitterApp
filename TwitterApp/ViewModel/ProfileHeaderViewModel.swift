@@ -31,18 +31,27 @@ struct ProfileHeaderViewModel {
     let usernameText: String
     
     var followingString: NSAttributedString? {
-        return attributedText(withValue: 0, text: "following")
+        return attributedText(withValue: user.stats?.following ?? 0, text: "following")
     }
     var followersString: NSAttributedString? {
-        return attributedText(withValue: 2, text: "followers")
+        return attributedText(withValue: user.stats?.followers ?? 0, text: "followers")
     }
     
     var editProfileFollowButtonTitle: String {
         if user.isCurrenUser {
             return "Edit Profile"
-        } else {
+        }
+        
+        // 沒被追蹤，且非當前用戶。
+        if !user.isUserFollowed && !user.isCurrenUser {
             return "Follow"
         }
+        
+        if user.isUserFollowed {
+            return "Following"
+        }
+        
+        return "Loading..."
     }
     
     init(user: User) {
