@@ -77,7 +77,7 @@ class ProfileController: UICollectionViewController {
     // MARK: - Helpers
     
     func configureUI() {
-        collectionView.backgroundColor = .red
+        collectionView.backgroundColor = .white
         collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: TweetCell.id)
         collectionView.register(ProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeader.id)
@@ -114,7 +114,7 @@ extension ProfileController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
+// MARK: - UICollectionViewDelegate
 
 extension ProfileController {
     // 設置 reuse 的 section 的 header 或 footer

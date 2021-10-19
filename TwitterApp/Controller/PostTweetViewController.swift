@@ -12,8 +12,10 @@ class PostTweetViewController: UIViewController {
     // MARK: - Properties
     
     private let user: User
+    private let config: PostTweetConfiguration
+    private lazy var viewModel = PostTweetViewModel(config: config)
     
-    private lazy var tweetButton: UIButton = {
+    private lazy var tweetReplyButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .customBlue
         button.setTitle("Tweet", for: .normal)
@@ -37,6 +39,14 @@ class PostTweetViewController: UIViewController {
         return imageView
     }()
     
+    private let replyUserLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = .lightGray
+        label.text = "replying to @testuser"
+        return label
+    }()
+    
     private let captionTextView = CaptionTextView()
     
     
@@ -46,10 +56,18 @@ class PostTweetViewController: UIViewController {
         
         configureUI()
         
+//        switch config {
+//        case .tweet:
+//            print("DEBUG: cofing:tweet")
+//        case .reply(let tweet):
+//            print("DEBUG: Replying to \(tweet.caption)")
+//        }
+        
     }
     
-    init(user: User) {
+    init(user: User, config: PostTweetConfiguration) {
         self.user = user
+        self.config = config
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -61,7 +79,7 @@ class PostTweetViewController: UIViewController {
     
     @objc func postTweet() {
         guard let caption = captionTextView.text else { return }
-        TweetService.shared.postTweet(caption: caption) { error, ref in
+        TweetService.shared.postTweet(caption: caption, type: config) { error, ref in
             if let error = error {
                 print("DEBUG: Failed to post tweet:\(error.localizedDescription)")
                 return
@@ -84,9 +102,14 @@ class PostTweetViewController: UIViewController {
         configureNavigationBar()
         view.backgroundColor = .white
         
-        let stack = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
-        stack.axis = .horizontal
-        stack.spacing = 10
+        let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
+        imageCaptionStack.axis = .horizontal
+        imageCaptionStack.spacing = 10
+        imageCaptionStack.alignment = .leading
+        
+        let stack = UIStackView(arrangedSubviews: [replyUserLabel, imageCaptionStack])
+        stack.axis = .vertical
+        stack.spacing = 12
         
         view.addSubview(stack)
         stack.snp.makeConstraints { make in
@@ -94,6 +117,13 @@ class PostTweetViewController: UIViewController {
             make.left.right.equalToSuperview().inset(20)
         }
         profileImageView.kf.setImage(with: user.profileImageUrl)
+        
+        tweetReplyButton.setTitle(viewModel.tweetReplyButtonTitle, for: .normal)
+        captionTextView.placeholderLabel.text = viewModel.placeholderText
+        
+        replyUserLabel.isHidden = !viewModel.shouldShowReplyLabel
+        guard let replyUserText = viewModel.replyUserText else { return }
+        replyUserLabel.text = replyUserText
         
     }
     
@@ -103,6 +133,6 @@ class PostTweetViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: tweetButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: tweetReplyButton)
     }
 }

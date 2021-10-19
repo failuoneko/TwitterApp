@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PagSselectorCell: UICollectionViewCell {
+class PagSelectorCell: UICollectionViewCell {
     
     // MARK: - Properties
     

@@ -30,7 +30,7 @@ class PagSelectorView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        collectionView.register(PagSselectorCell.self, forCellWithReuseIdentifier: PagSselectorCell.id)
+        collectionView.register(PagSelectorCell.self, forCellWithReuseIdentifier: PagSelectorCell.id)
         
         let selectedIndexPath = IndexPath(row: 0, section: 0)
         collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
@@ -87,7 +87,7 @@ extension PagSelectorView: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PagSselectorCell.id, for: indexPath) as! PagSselectorCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PagSelectorCell.id, for: indexPath) as! PagSelectorCell
         
         let option = PagSelectorViewOptions(rawValue: indexPath.row)
         cell.option = option

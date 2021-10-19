@@ -9,6 +9,7 @@ import UIKit
 
 protocol TweetCellDelegate: AnyObject {
     func profileImageViewTapped(_ cell: TweetCell)
+    func replyTapped(_ cell: TweetCell)
 }
 
 class TweetCell: UICollectionViewCell {
@@ -45,6 +46,7 @@ class TweetCell: UICollectionViewCell {
         return imageView
     }()
     
+    // comment/retweet/like/share
     private lazy var commentButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "bubble.left"), for: .normal)
@@ -155,7 +157,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     @objc func commentButtonTapped() {
-        
+        delegate?.replyTapped(self)
     }
     
     @objc func retweetButtonTapped() {
