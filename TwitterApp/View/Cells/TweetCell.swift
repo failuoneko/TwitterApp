@@ -10,6 +10,7 @@ import UIKit
 protocol TweetCellDelegate: AnyObject {
     func profileImageViewTapped(_ cell: TweetCell)
     func replyTapped(_ cell: TweetCell)
+    func likeTapped(_ cell: TweetCell)
 }
 
 class TweetCell: UICollectionViewCell {
@@ -129,7 +130,7 @@ class TweetCell: UICollectionViewCell {
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
         actionStack.axis = .horizontal
-//        actionStack.distribution = .fillProportionally
+        //        actionStack.distribution = .fillProportionally
         actionStack.spacing = 70
         addSubview(actionStack)
         actionStack.snp.makeConstraints { make in
@@ -137,8 +138,8 @@ class TweetCell: UICollectionViewCell {
             make.centerX.equalToSuperview()
         }
         
-//        let underlineView = UIView()
-//        underlineView.backgroundColor = .systemGroupedBackground
+        //        let underlineView = UIView()
+        //        underlineView.backgroundColor = .systemGroupedBackground
         addSubview(underlineView)
         underlineView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
@@ -165,7 +166,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     @objc func likeButtonTapped() {
-        
+        delegate?.likeTapped(self)
     }
     
     @objc func shareButtonTapped() {
@@ -182,6 +183,9 @@ class TweetCell: UICollectionViewCell {
         captionLabel.text = tweet.caption
         profileImageView.kf.setImage(with: viewModel.profileImageUrl)
         infoLabel.attributedText = viewModel.userInfoText
+        
+        likeButton.tintColor = viewModel.likeButtonTintColor
+        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
     }
     
 }

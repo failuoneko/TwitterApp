@@ -52,7 +52,19 @@ class FeedController: UICollectionViewController {
     
     func fetchTweets() {
         TweetService.shared.fetchTweets { tweets in
-            self.tweets = tweets
+            self.tweets = tweets // 顯示推文
+            self.checkIsUserLikedTweets(tweets)
+        }
+    }
+    
+    // 依序檢查，有按讚才繼續往下執行。
+    func checkIsUserLikedTweets(_ tweets: [Tweet]) {
+        for (index, tweet) in tweets.enumerated() {
+            TweetService.shared.checkIsUserLikedTweet(tweet) { didLike in
+                guard didLike == true else { return }
+                
+                self.tweets[index].didLike = true
+            }
         }
     }
     
@@ -125,6 +137,19 @@ extension FeedController: TweetCellDelegate {
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true, completion: nil)
+    }
+    
+    func likeTapped(_ cell: TweetCell) {
+        guard let tweet = cell.tweet else { return }
+        TweetService.shared.likeTweet(tweet: tweet) { error, ref in
+            cell.tweet?.didLike.toggle()
+            let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+            cell.tweet?.likes = likes
+            
+            // 只有點讚時才發送通知。
+            guard !tweet.didLike else { return }
+            NotificationService.shared.postNotification(type: .like)
+        }
     }
     
 }

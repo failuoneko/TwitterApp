@@ -65,6 +65,15 @@ struct TweetViewModel {
         
     }
     
+    var likeButtonTintColor: UIColor {
+        return tweet.didLike ? .red : .lightGray
+    }
+    
+    var likeButtonImage: UIImage {
+        let imageName = tweet.didLike ? "heart.fill" : "heart"
+        return UIImage(systemName: imageName)!
+    }
+    
     func attributedText(withValue value: Int, text: String) -> NSAttributedString {
         let firstAttributedtitle = NSAttributedString(string: "\(value)",
                                                       attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])

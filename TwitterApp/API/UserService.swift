@@ -54,7 +54,7 @@ class UserService {
     func checkIsFollowed(uid: String, completion: @escaping(Bool) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         REF_USER_FOLLOWING.child(currentUid).child(uid).observeSingleEvent(of: .value) { snapshot in
-            print("DEBUG: User is followed is \(snapshot.exists())")
+//            print("DEBUG: User is followed is \(snapshot.exists())")
             completion(snapshot.exists())
         }
     }
