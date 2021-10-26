@@ -202,7 +202,6 @@ extension ProfileController: ProfileHeaderDelegate {
             return
         }
         
-        
         if user.isUserFollowed {
             // 已追蹤時取消追蹤。
             UserService.shared.unfollowUser(uid: user.uid) { error, ref in
@@ -218,7 +217,7 @@ extension ProfileController: ProfileHeaderDelegate {
                 //                header.editProfileFollowButton.setTitle("Following", for: .normal)
                 
                 #warning("被追蹤時收到通知")
-                NotificationService.shared.postNotification(type: .follow, user: self.user)
+                NotificationService.shared.postNotification(user: self.user, type: .follow)
                 
             }
         }

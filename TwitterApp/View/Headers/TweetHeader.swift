@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import ActiveLabel
 
 protocol TweetHeaderDelegate: AnyObject {
     func showActionSheet()
+    func fetchUser(withUsername username: String)
 }
 
 class TweetHeader: UICollectionReusableView {
@@ -49,10 +51,12 @@ class TweetHeader: UICollectionReusableView {
         return label
     }()
     
-    private let captionLabel: UILabel = {
-        let label = UILabel()
+    private let captionLabel: ActiveLabel = {
+        let label = ActiveLabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
+        label.mentionColor = .customBlue
+        label.hashtagColor = .customBlue
         label.text = "Caption Loading..."
         return label
     }()
@@ -67,10 +71,11 @@ class TweetHeader: UICollectionReusableView {
         return label
     }()
     
-    private let replyToUserLabel : UILabel = {
-        let label = UILabel()
+    private let replyToUserLabel : ActiveLabel = {
+        let label = ActiveLabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 12)
+        label.mentionColor = .customBlue
         return label
     }()
     
@@ -166,6 +171,7 @@ class TweetHeader: UICollectionReusableView {
         
 //        backgroundColor = .white
         configureUI()
+        configureMention()
         
     }
     
@@ -274,7 +280,19 @@ class TweetHeader: UICollectionReusableView {
             make.centerX.equalToSuperview()
             make.top.equalTo(statsView.snp.bottom).inset(-16)
         }
-        
     }
     
+    // MARK: - configureMention
+    
+    func configureMention() {
+        captionLabel.handleMentionTap { username in
+            print("DEBUG: metioned user : [\(username)]")
+            self.delegate?.fetchUser(withUsername: username)
+        }
+        
+        replyToUserLabel.handleMentionTap { mention in
+            print("DEBUG: metioned user : [\(mention)]")
+        }
+        
+    }
 }

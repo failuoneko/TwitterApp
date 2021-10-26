@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import ActiveLabel
 
 protocol TweetCellDelegate: AnyObject {
     func profileImageViewTapped(_ cell: TweetCell)
     func replyTapped(_ cell: TweetCell)
     func likeTapped(_ cell: TweetCell)
+    func fetchUser(withUsername username: String)
 }
 
 class TweetCell: UICollectionViewCell {
@@ -26,10 +28,12 @@ class TweetCell: UICollectionViewCell {
     
     private let infoLabel = UILabel()
     
-    private let replyToUserLabel : UILabel = {
-        let label = UILabel()
+    private let replyToUserLabel : ActiveLabel = {
+        let label = ActiveLabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 12)
+        label.mentionColor = .customBlue
+
 //        label.text = " replying to @username"
 //        let tap = UITapGestureRecognizer(target: self, action: #selector())
 //        label.addGestureRecognizer(tap)
@@ -37,10 +41,12 @@ class TweetCell: UICollectionViewCell {
         return label
     }()
     
-    private let captionLabel: UILabel = {
-        let label = UILabel()
+    private let captionLabel: ActiveLabel = {
+        let label = ActiveLabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
+        label.mentionColor = .customBlue
+        label.hashtagColor = .customBlue
 //        label.backgroundColor = .blue
 //        label.text = "test caption"
         return label
@@ -115,6 +121,42 @@ class TweetCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        configureUI()
+        configureMention()
+
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Selectors
+    
+    @objc func profileImageViewTapped() {
+        delegate?.profileImageViewTapped(self)
+    }
+    
+    @objc func commentButtonTapped() {
+        delegate?.replyTapped(self)
+    }
+    
+    @objc func retweetButtonTapped() {
+        
+    }
+    
+    @objc func likeButtonTapped() {
+        delegate?.likeTapped(self)
+    }
+    
+    @objc func shareButtonTapped() {
+        
+    }
+    
+    
+    // MARK: - Helpers
+    
+    func configureUI() {
+        
         backgroundColor = .white
         
         let infoStack = UIStackView(arrangedSubviews: [infoLabel, replyToUserLabel, captionLabel])
@@ -154,36 +196,7 @@ class TweetCell: UICollectionViewCell {
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(1)
         }
-        
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    // MARK: - Selectors
-    
-    @objc func profileImageViewTapped() {
-        delegate?.profileImageViewTapped(self)
-    }
-    
-    @objc func commentButtonTapped() {
-        delegate?.replyTapped(self)
-    }
-    
-    @objc func retweetButtonTapped() {
-        
-    }
-    
-    @objc func likeButtonTapped() {
-        delegate?.likeTapped(self)
-    }
-    
-    @objc func shareButtonTapped() {
-        
-    }
-    
-    
-    // MARK: - Helpers
     
     func configure() {
         guard let tweet = tweet else { return }
@@ -198,6 +211,19 @@ class TweetCell: UICollectionViewCell {
         
         replyToUserLabel.isHidden = viewModel.shouldHideReplyToUserLabel
         replyToUserLabel.text = viewModel.replyText
+    }
+    
+    // MARK: - configureMention
+    
+    func configureMention() {
+        captionLabel.handleMentionTap { username in
+            print("DEBUG: go to user profile : [\(username)]")
+            self.delegate?.fetchUser(withUsername: username)
+        }
+        
+        replyToUserLabel.handleMentionTap { mention in
+            print("DEBUG: replying to metion @ : [\(mention)]")
+        }
     }
     
 }

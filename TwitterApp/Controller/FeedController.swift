@@ -166,7 +166,15 @@ extension FeedController: TweetCellDelegate {
             
             // 只有點讚時才發送通知。
             guard !tweet.didLike else { return }
-            NotificationService.shared.postNotification(type: .like, tweet: tweet)
+            NotificationService.shared.postNotification(user: tweet.user, tweetID: tweet.tweetID, type: .like)
+        }
+    }
+    
+    func fetchUser(withUsername username: String) {
+        UserService.shared.fetchUser(withUsername: username) { user in
+            print("DEBUG: user : [\(user.username)]")
+            let controller = ProfileController(user: user)
+            self.navigationController?.pushViewController(controller, animated: true)
         }
     }
     

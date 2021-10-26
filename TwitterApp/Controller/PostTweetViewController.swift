@@ -90,7 +90,7 @@ class PostTweetViewController: UIViewController {
             
             // 確認是否在回覆的推文中。
             if case .reply(let tweet) = self.config {
-                NotificationService.shared.postNotification(type: .reply, tweet: tweet)
+                NotificationService.shared.postNotification(user: tweet.user, tweetID: tweet.tweetID, type: .reply)
             }
             
             self.dismiss(animated: true, completion: nil)
@@ -144,7 +144,7 @@ class PostTweetViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: tweetReplyButton)
     }
     
-    // MARK: - Helpers
+    // MARK: - configureMention
 
     func configureMention() {
         replyUserLabel.handleMentionTap { mention in

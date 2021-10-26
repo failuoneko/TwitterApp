@@ -11,7 +11,7 @@ struct NotificationService {
     
     static let shared = NotificationService()
     
-    func postNotification(type: NotificationType, tweet: Tweet? = nil, user: User? = nil) {
+    func postNotification(user: User, tweetID: String? = nil, type: NotificationType) {
         //        print("DEBUG: type is :\(type)")
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -19,13 +19,10 @@ struct NotificationService {
                                      "timestamp": Int(NSDate().timeIntervalSince1970),
                                      "type": type.rawValue]
         
-        if let tweet = tweet {
-            values["tweetID"] = tweet.tweetID
-            // 到該user創建通知的結構，並更新資料。
-            REF_NOTIFICATIONS.child(tweet.user.uid).childByAutoId().updateChildValues(values)
-        } else if let user = user {
-            REF_NOTIFICATIONS.child(user.uid).childByAutoId().updateChildValues(values)
+        if let tweetID = tweetID {
+            values["tweetID"] = tweetID
         }
+        REF_NOTIFICATIONS.child(user.uid).childByAutoId().updateChildValues(values)
     }
     
     func fetchNotifications(completion: @escaping([Notification]) -> Void) {

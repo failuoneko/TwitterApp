@@ -18,6 +18,7 @@ let REF_USER_LIKES = DATABASE_REF.child("user_likes")
 let REF_TWEET_LIKES = DATABASE_REF.child("tweet_likes")
 let REF_NOTIFICATIONS = DATABASE_REF.child("notifications")
 let REF_USER_REPLIES = DATABASE_REF.child("user_replies")
+let REF_USER_USERNAMES = DATABASE_REF.child("user_usernames")
 
 let STORAGE_REF = Storage.storage().reference()
 let STORAGE_PROFILE_IMAGES = STORAGE_REF.child("profile_images")

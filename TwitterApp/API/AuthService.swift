@@ -19,7 +19,7 @@ struct RegisterCredentials {
 class AuthService {
     static let shared = AuthService()
     
-    func userlogin(withEmail email: String, password: String, completion: AuthDataResultCallback?) {
+    func userlogin(withEmail email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password, completion: completion)
     }
     
