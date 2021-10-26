@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ActiveLabel
 
 class PostTweetViewController: UIViewController {
     
@@ -39,15 +40,16 @@ class PostTweetViewController: UIViewController {
         return imageView
     }()
     
-    private let replyUserLabel: UILabel = {
-        let label = UILabel()
+    private let replyUserLabel: ActiveLabel = {
+        let label = ActiveLabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = .lightGray
-        label.text = "replying to @testuser"
+        label.mentionColor = .customBlue
+//        label.text = "replying to @testuser"
         return label
     }()
     
-    private let captionTextView = CaptionTextView()
+    private let captionTextView = InputTextView()
     
     
     // MARK: - Lifecycle
@@ -55,6 +57,7 @@ class PostTweetViewController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        configureMention()
         
 //        switch config {
 //        case .tweet:
@@ -83,6 +86,11 @@ class PostTweetViewController: UIViewController {
             if let error = error {
                 print("DEBUG: Failed to post tweet:\(error.localizedDescription)")
                 return
+            }
+            
+            // 確認是否在回覆的推文中。
+            if case .reply(let tweet) = self.config {
+                NotificationService.shared.postNotification(type: .reply, tweet: tweet)
             }
             
             self.dismiss(animated: true, completion: nil)
@@ -135,4 +143,13 @@ class PostTweetViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: tweetReplyButton)
     }
+    
+    // MARK: - Helpers
+
+    func configureMention() {
+        replyUserLabel.handleMentionTap { mention in
+            print("DEBUG: metioned user : [\(mention)]")
+        }
+    }
+    
 }

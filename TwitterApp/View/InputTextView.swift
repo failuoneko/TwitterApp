@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CaptionTextView: UITextView {
+class InputTextView: UITextView {
     
     // MARK: - Properties
     
@@ -53,6 +53,5 @@ class CaptionTextView: UITextView {
 //            placeholderLabel.isHidden = true
 //        }
     }
-    
     
 }

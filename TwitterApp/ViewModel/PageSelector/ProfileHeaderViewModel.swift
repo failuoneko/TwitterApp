@@ -7,34 +7,36 @@
 
 import UIKit
 
-enum PagSelectorViewOptions: Int, CaseIterable {
-    case tweets
-    case replies
-    case likes
-    
-    var description:String {
-        switch self {
-        case .tweets:
-            return "Tweets"
-        case .replies:
-            return "Tweets & Replies"
-        case .likes:
-            return "Likes"
-        }
-    }
-}
+//enum PageSelectorViewOptions: Int, CaseIterable {
+//    case tweets
+//    case replies
+//    case likes
+//    
+//    var description:String {
+//        switch self {
+//        case .tweets:
+//            return "Tweets"
+//        case .replies:
+//            return "Tweets & Replies"
+//        case .likes:
+//            return "Likes"
+//        }
+//    }
+//}
 
 struct ProfileHeaderViewModel {
+    
+    // MARK: - Properties
     
     private let user: User
     
     let usernameText: String
     
     var followingString: NSAttributedString? {
-        return attributedText(withValue: user.stats?.following ?? 0, text: "following")
+        return attributedText(withValue: user.follow?.following ?? 0, text: "following")
     }
     var followersString: NSAttributedString? {
-        return attributedText(withValue: user.stats?.followers ?? 0, text: "followers")
+        return attributedText(withValue: user.follow?.followers ?? 0, text: "followers")
     }
     
     var editProfileFollowButtonTitle: String {
@@ -54,10 +56,14 @@ struct ProfileHeaderViewModel {
         return "Loading..."
     }
     
+    // MARK: - Lifecycle
+    
     init(user: User) {
         self.user = user
         self.usernameText = "@" + user.username
     }
+    
+    // MARK: - Helpers
     
     func attributedText(withValue value: Int, text: String) -> NSAttributedString {
         let firstAttributedtitle = NSAttributedString(string: "\(value)",

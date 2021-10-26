@@ -7,7 +7,7 @@
 
 import Firebase
 
-let DATABASE_REF = Database.database().reference()
+let DATABASE_REF = Database.database().reference() // 告訴Firebase我們要找的資料庫路徑。
 let REF_USERS = DATABASE_REF.child("users")
 let REF_TWEETS = DATABASE_REF.child("tweets")
 let REF_USER_TWEETS = DATABASE_REF.child("user_tweets")
@@ -16,6 +16,8 @@ let REF_USER_FOLLOWING = DATABASE_REF.child("user_following")
 let REF_TWEET_REPLIES = DATABASE_REF.child("tweet_replies")
 let REF_USER_LIKES = DATABASE_REF.child("user_likes")
 let REF_TWEET_LIKES = DATABASE_REF.child("tweet_likes")
+let REF_NOTIFICATIONS = DATABASE_REF.child("notifications")
+let REF_USER_REPLIES = DATABASE_REF.child("user_replies")
 
 let STORAGE_REF = Storage.storage().reference()
 let STORAGE_PROFILE_IMAGES = STORAGE_REF.child("profile_images")

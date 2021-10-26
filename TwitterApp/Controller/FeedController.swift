@@ -51,21 +51,35 @@ class FeedController: UICollectionViewController {
     // MARK: - API
     
     func fetchTweets() {
+        collectionView.refreshControl?.beginRefreshing()
         TweetService.shared.fetchTweets { tweets in
-            self.tweets = tweets // 顯示推文
-            self.checkIsUserLikedTweets(tweets)
+            // 顯示貼文，最新推文顯示在最上面。
+            self.tweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
+            // 查看User是否有按讚。
+            self.checkIsUserLikedTweets()
+            
+            self.collectionView.refreshControl?.endRefreshing()
+
         }
     }
     
     // 依序檢查，有按讚才繼續往下執行。
-    func checkIsUserLikedTweets(_ tweets: [Tweet]) {
-        for (index, tweet) in tweets.enumerated() {
+    func checkIsUserLikedTweets() {
+        self.tweets.forEach { tweet in
             TweetService.shared.checkIsUserLikedTweet(tweet) { didLike in
                 guard didLike == true else { return }
                 
-                self.tweets[index].didLike = true
+                if let index = self.tweets.firstIndex(where: { $0.tweetID == tweet.tweetID }) {
+                    self.tweets[index].didLike = true
+                }
             }
         }
+    }
+    
+    // MARK: - Selectors
+    
+    @objc func handelRefresh() {
+        fetchTweets()
     }
     
     
@@ -79,6 +93,10 @@ class FeedController: UICollectionViewController {
         imageView.contentMode = .scaleAspectFit
         imageView.snp.makeConstraints{ $0.size.equalTo(44) }
         navigationItem.titleView = imageView
+        
+        let refreshControl = UIRefreshControl()
+        collectionView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(handelRefresh), for: .valueChanged)
     }
     
     func configureSmallProfileImageView() {
@@ -98,8 +116,8 @@ extension FeedController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TweetCell.id, for: indexPath) as! TweetCell
-        cell.tweet = tweets[indexPath.row]
         cell.delegate = self
+        cell.tweet = tweets[indexPath.row]
         return cell
     }
     
@@ -117,7 +135,7 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
         let viewModel = TweetViewModel(tweet: tweets[indexPath.row])
         let height = viewModel.cellSize(forWith: view.frame.width).height
         
-        return CGSize(width: view.frame.width, height: height + 80)
+        return CGSize(width: view.frame.width, height: height + 100)
     }
 }
 
@@ -148,7 +166,7 @@ extension FeedController: TweetCellDelegate {
             
             // 只有點讚時才發送通知。
             guard !tweet.didLike else { return }
-            NotificationService.shared.postNotification(type: .like)
+            NotificationService.shared.postNotification(type: .like, tweet: tweet)
         }
     }
     

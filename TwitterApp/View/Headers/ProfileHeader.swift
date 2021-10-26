@@ -10,6 +10,7 @@ import UIKit
 protocol ProfileHeaderDelegate: AnyObject {
     func dismissal()
     func editProfileFollow(_ header: ProfileHeader)
+    func didSelect(page: PageSelectorViewOptions)
 }
 
 class ProfileHeader: UICollectionReusableView {
@@ -86,12 +87,6 @@ class ProfileHeader: UICollectionReusableView {
         label.numberOfLines = 3
         label.text = "This is just sample profile :)"
         return label
-    }()
-    
-    private let underlineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .customBlue
-        return view
     }()
     
     private let followingLabel: UILabel = {
@@ -205,14 +200,6 @@ class ProfileHeader: UICollectionReusableView {
             make.height.equalTo(50)
         }
         
-        addSubview(underlineView)
-        underlineView.snp.makeConstraints { make in
-            make.left.bottom.equalToSuperview()
-            let count = CGFloat(PagSelectorViewOptions.allCases.count)
-            make.width.equalTo(frame.width / count)
-            make.height.equalTo(2)
-        }
-        
         let followLabelStack = UIStackView(arrangedSubviews: [followingLabel, followersLabel])
         followLabelStack.axis = .horizontal
         followLabelStack.spacing = 4
@@ -230,12 +217,19 @@ class ProfileHeader: UICollectionReusableView {
 // MARK: - PagSelectorViewDelegate
 
 extension ProfileHeader: PagSelectorViewDelegate {
-    func pagSelectorView(_ view: PagSelectorView, didSelect indexPath: IndexPath) {
-        guard let cell = view.collectionView.cellForItem(at: indexPath) else { return }
+    func pagSelectorView(_ view: PagSelectorView, didSelect index: Int) {
         
-        let xPosition = cell.frame.origin.x
-        UIView.animate(withDuration: 0.3) {
-            self.underlineView.frame.origin.x = xPosition
-        }
+        guard let page = PageSelectorViewOptions(rawValue: index) else { return }
+        
+        print("DEBUG: delegate action from header to controller with page : [\(page)]")
+        
+        delegate?.didSelect(page: page)
+        
+//        guard let cell = view.collectionView.cellForItem(at: indexPath) else { return }
+//
+//        let xPosition = cell.frame.origin.x
+//        UIView.animate(withDuration: 0.3) {
+//            self.underlineView.frame.origin.x = xPosition
+//        }
     }
 }

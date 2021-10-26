@@ -19,6 +19,7 @@ class UserService {
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             let user = User(uid: uid, dictionary: dictionary)
             completion(user)
+            
         }
     }
     
@@ -60,16 +61,44 @@ class UserService {
     }
     
     // 獲取跟隨中、跟隨者數量。
-    func fetchUserStats(uid: String, completion: @escaping (UserStats) -> Void) {
+    func fetchUserFollow(uid: String, completion: @escaping (UserFollow) -> Void) {
         REF_USER_FOLLOWERS.child(uid).observeSingleEvent(of: .value) { snapshot in
             let followers = snapshot.children.allObjects.count
             
             REF_USER_FOLLOWING.child(uid).observeSingleEvent(of: .value) { snapshot in
                 let following = snapshot.children.allObjects.count
-                let stats = UserStats(followers: followers, following: following)
-                completion(stats)
+                let follow = UserFollow(followers: followers, following: following)
+                completion(follow)
             }
         }
     }
     
+    func updateProfileImage(image: UIImage, completion: @escaping(URL?) -> Void) {
+        guard let imageData = image.jpegData(compressionQuality: 0.3) else { return }
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+        let filename = NSUUID().uuidString
+        let storageRef = STORAGE_PROFILE_IMAGES.child(filename)
+        
+        // 上傳照片後下載照片。
+        storageRef.putData(imageData, metadata: nil) { meta, error in
+            storageRef.downloadURL { url, error in
+                guard let profileImageUrl = url?.absoluteString else { return }
+                let values = ["profileImageUrl": profileImageUrl]
+                
+                REF_USERS.child(currentUid).updateChildValues(values) { error, ref in
+                    completion(url)
+                }
+            }
+        }
+    }
+    
+    func saveUserData(user: User, completion: @escaping(Error?, DatabaseReference) -> Void) {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+
+        let values = ["fullname": user.fullname,
+                      "username": user.username,
+                      "bio": user.bio ?? ""]
+        REF_USERS.child(currentUid).updateChildValues(values, withCompletionBlock: completion)
+        
+    }
 }

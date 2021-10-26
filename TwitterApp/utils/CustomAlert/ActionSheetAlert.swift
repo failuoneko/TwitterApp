@@ -78,7 +78,7 @@ class ActionSheetAlert: NSObject {
 
     // MARK: - Helpers
 
-    func showTableView(_ shoukdShow: Bool) {
+    func showAlertTableView(_ shoukdShow: Bool) {
         guard let window = window else { return }
         guard let height = tableViewHight else { return }
         let y = shoukdShow ? window.frame.height - height : window.frame.height
@@ -101,7 +101,7 @@ class ActionSheetAlert: NSObject {
         
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 1
-            self.showTableView(true)
+            self.showAlertTableView(true)
 //            self.tableView.frame.origin.y -= height
         }
         
@@ -149,7 +149,7 @@ extension ActionSheetAlert: UITableViewDelegate {
         let option = viewModel.options[indexPath.row]
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            self.showTableView(false)
+            self.showAlertTableView(false)
         } completion: { _ in
             self.delegate?.didSelect(option: option) // 關閉動畫跑完後，執行delegate。
         }

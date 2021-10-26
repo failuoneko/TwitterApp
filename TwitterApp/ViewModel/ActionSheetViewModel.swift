@@ -9,6 +9,8 @@ import UIKit
 
 struct ActionSheetViewModel {
     
+    // MARK: - Properties
+    
     private let user: User
     
     var options: [ActionSheetOptions] {
@@ -27,11 +29,14 @@ struct ActionSheetViewModel {
         return results
     }
     
-    
+    // MARK: - Lifecycle
+
     init(user: User) {
         self.user = user
     }
 }
+
+// MARK: - ActionSheetOptions
 
 enum ActionSheetOptions {
     case follow(User)

@@ -19,18 +19,30 @@ class TweetCell: UICollectionViewCell {
     
     // 讀取資料要時間，有可能沒資料，所以用問號。
     var tweet: Tweet? {
-        didSet {
-            configure()
-        }
+        didSet { configure() }
     }
     
     weak var delegate: TweetCellDelegate?
+    
+    private let infoLabel = UILabel()
+    
+    private let replyToUserLabel : UILabel = {
+        let label = UILabel()
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 12)
+//        label.text = " replying to @username"
+//        let tap = UITapGestureRecognizer(target: self, action: #selector())
+//        label.addGestureRecognizer(tap)
+//        label.isUserInteractionEnabled = true
+        return label
+    }()
     
     private let captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
-        label.text = "test caption"
+//        label.backgroundColor = .blue
+//        label.text = "test caption"
         return label
     }()
     
@@ -92,8 +104,6 @@ class TweetCell: UICollectionViewCell {
         return button
     }()
     
-    private let infoLabel = UILabel()
-    
     private let underlineView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGroupedBackground
@@ -107,25 +117,26 @@ class TweetCell: UICollectionViewCell {
         
         backgroundColor = .white
         
-        addSubview(profileImageView)
-        profileImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.left.equalToSuperview().inset(8)
+        let infoStack = UIStackView(arrangedSubviews: [infoLabel, replyToUserLabel, captionLabel])
+        infoStack.axis = .vertical
+        #warning("BUG?")
+        infoStack.distribution = .fill
+        infoStack.spacing = 4
+        
+        let imageAndInfoStack = UIStackView(arrangedSubviews: [profileImageView, infoStack])
+        imageAndInfoStack.axis = .horizontal
+        imageAndInfoStack.distribution = .fillProportionally
+        imageAndInfoStack.spacing = 10
+        imageAndInfoStack.alignment = .leading
+        
+        #warning("imageAndInfoStack")
+        addSubview(imageAndInfoStack)
+        imageAndInfoStack.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(10)
+            make.left.right.equalToSuperview().inset(10)
         }
         
-        let stack = UIStackView(arrangedSubviews: [infoLabel, captionLabel])
-        stack.axis = .vertical
-        stack.distribution = .fillProportionally
-        stack.spacing = 4
-        
-        addSubview(stack)
-        stack.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView)
-            make.right.equalToSuperview().inset(10)
-            make.left.equalTo(profileImageView.snp.right).inset(-10)
-        }
-        
-        infoLabel.text = "Harry Potter @account"
+//        infoLabel.text = "Harry Potter @account"
         infoLabel.font = UIFont.systemFont(ofSize: 14)
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
@@ -138,8 +149,6 @@ class TweetCell: UICollectionViewCell {
             make.centerX.equalToSuperview()
         }
         
-        //        let underlineView = UIView()
-        //        underlineView.backgroundColor = .systemGroupedBackground
         addSubview(underlineView)
         underlineView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
@@ -179,13 +188,16 @@ class TweetCell: UICollectionViewCell {
     func configure() {
         guard let tweet = tweet else { return }
         let viewModel = TweetViewModel(tweet: tweet)
-        
-        captionLabel.text = tweet.caption
+
         profileImageView.kf.setImage(with: viewModel.profileImageUrl)
         infoLabel.attributedText = viewModel.userInfoText
+        captionLabel.text = tweet.caption
         
         likeButton.tintColor = viewModel.likeButtonTintColor
         likeButton.setImage(viewModel.likeButtonImage, for: .normal)
+        
+        replyToUserLabel.isHidden = viewModel.shouldHideReplyToUserLabel
+        replyToUserLabel.text = viewModel.replyText
     }
     
 }

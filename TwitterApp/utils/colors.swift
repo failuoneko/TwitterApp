@@ -13,7 +13,7 @@ extension UIColor {
         return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1)
     }
     
-    /// customBlue(red: 30, green: 160, blue: 240)
+    /// customBlue(red: 30/255, green: 160/255, blue: 240/255)
     static let customBlue = UIColor.rgb(red: 30, green: 160, blue: 240)
 
 }

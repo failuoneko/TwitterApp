@@ -67,6 +67,13 @@ class TweetHeader: UICollectionReusableView {
         return label
     }()
     
+    private let replyToUserLabel : UILabel = {
+        let label = UILabel()
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 12)
+        return label
+    }()
+    
     private lazy var optionsButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .lightGray
@@ -210,6 +217,8 @@ class TweetHeader: UICollectionReusableView {
         likeButton.setImage(viewModel.likeButtonImage, for: .normal)
         likeButton.tintColor = viewModel.likeButtonTintColor
         
+        replyToUserLabel.isHidden = viewModel.shouldHideReplyToUserLabel
+        replyToUserLabel.text = viewModel.replyText
         
     }
     
@@ -219,8 +228,13 @@ class TweetHeader: UICollectionReusableView {
         labelStack.axis = .vertical
         labelStack.spacing = -6
         
-        let stack = UIStackView(arrangedSubviews: [profileImageView, labelStack])
-        stack.spacing = 12
+        let imageAndLabelStack = UIStackView(arrangedSubviews: [profileImageView, labelStack])
+        imageAndLabelStack.spacing = 12
+        
+        let stack = UIStackView(arrangedSubviews: [replyToUserLabel, imageAndLabelStack])
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.distribution = .fillProportionally
         
         addSubview(stack)
         stack.snp.makeConstraints { make in

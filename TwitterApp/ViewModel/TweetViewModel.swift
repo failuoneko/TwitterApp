@@ -9,10 +9,7 @@ import UIKit
 
 struct TweetViewModel {
     
-    init(tweet: Tweet) {
-        self.tweet = tweet
-        self.user = tweet.user
-    }
+    // MARK: - Properties
     
     let tweet: Tweet
     let user: User
@@ -49,13 +46,13 @@ struct TweetViewModel {
     
     var userInfoText: NSAttributedString {
         let firstAttributedtitle = NSAttributedString(string: user.fullname,
-                                                      attributes: [.font: UIFont.systemFont(ofSize: 16)])
+                                                      attributes: [.font: UIFont.systemFont(ofSize: 14)])
         let secondAttributedtitle = NSAttributedString(string: " @\(user.username)",
                                                        attributes: [.foregroundColor: UIColor.lightGray,
-                                                                    .font: UIFont.boldSystemFont(ofSize: 16)])
+                                                                    .font: UIFont.boldSystemFont(ofSize: 14)])
         let timestamptitle = NSAttributedString(string: "・\(timestamp)",
                                                 attributes: [.foregroundColor: UIColor.lightGray,
-                                                             .font: UIFont.boldSystemFont(ofSize: 16)])
+                                                             .font: UIFont.boldSystemFont(ofSize: 14)])
         let attributedText = NSMutableAttributedString()
         attributedText.append(firstAttributedtitle)
         attributedText.append(secondAttributedtitle)
@@ -73,6 +70,24 @@ struct TweetViewModel {
         let imageName = tweet.didLike ? "heart.fill" : "heart"
         return UIImage(systemName: imageName)!
     }
+    
+    var shouldHideReplyToUserLabel: Bool {
+        return !tweet.isReply // 回覆(Reply)時不隱藏。
+    }
+    
+    var replyText: String? {
+        guard let username = tweet.replyingToUser else { return nil }
+        return "→ replying to @\(username)"
+    }
+    
+    // MARK: - Lifecycle
+    
+    init(tweet: Tweet) {
+        self.tweet = tweet
+        self.user = tweet.user
+    }
+    
+    // MARK: - Helpers
     
     func attributedText(withValue value: Int, text: String) -> NSAttributedString {
         let firstAttributedtitle = NSAttributedString(string: "\(value)",
@@ -94,7 +109,10 @@ struct TweetViewModel {
         measurementLabel.numberOfLines = 0
         measurementLabel.lineBreakMode = .byWordWrapping // 換行時以單詞為斷點
         measurementLabel.snp.makeConstraints{ $0.width.equalTo(width) }
+        
         return measurementLabel.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize) // 盡可能大
+//        return measurementLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+
     }
 
 }

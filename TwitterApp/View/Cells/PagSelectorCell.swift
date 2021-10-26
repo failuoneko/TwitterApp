@@ -11,7 +11,7 @@ class PagSelectorCell: UICollectionViewCell {
     
     // MARK: - Properties
     
-    var option: PagSelectorViewOptions? {
+    var option: PageSelectorViewOptions? {
         didSet {
             titleLabel.text = option?.description
         }
