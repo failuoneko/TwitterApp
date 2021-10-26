@@ -46,12 +46,6 @@ class InputTextView: UITextView {
 
     @objc func textInputChange() {
         placeholderLabel.isHidden = !text.isEmpty
-        
-//        if text.isEmpty {
-//            placeholderLabel.isHidden = false
-//        } else {
-//            placeholderLabel.isHidden = true
-//        }
     }
     
 }

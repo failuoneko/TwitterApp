@@ -9,6 +9,7 @@ import UIKit
 
 protocol EditProfileControllerDelegate: AnyObject {
     func controller(_ controller: EditProfileController, handleUpdate user: User)
+    func logout()
 }
 
 class EditProfileController: UITableViewController {
@@ -17,6 +18,7 @@ class EditProfileController: UITableViewController {
     
     private var user: User
     private lazy var headerView = EditProfileHeader(user: user)
+    private lazy var footerView = EditProfileFooter()
     private let imagePicker = UIImagePickerController()
     private var isUserInfoChanged = false
     
@@ -120,16 +122,22 @@ class EditProfileController: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDone))
-//        navigationItem.rightBarButtonItem?.isEnabled = false
+        //        navigationItem.rightBarButtonItem?.isEnabled = false
     }
+    
+    // MARK: - configureTableView
     
     func configureTableView() {
         tableView.tableHeaderView = headerView
-        tableView.tableFooterView = UIView()
         tableView.isScrollEnabled = false
         headerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 200)
         
+        tableView.tableFooterView = footerView
+        footerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+        
         headerView.delegate = self
+        footerView.delegate = self
+        
         tableView.register(EditProfileCell.self, forCellReuseIdentifier: EditProfileCell.id)
     }
 }
@@ -213,5 +221,28 @@ extension EditProfileController: EditProfileCellDelegate {
         print("DEBUG: username = [\(user.username)]")
         print("DEBUG: bio = [\(user.bio)]")
         
+    }
+}
+
+// MARK: - EditProfileFooterDelegate
+
+extension EditProfileController: EditProfileFooterDelegate {
+    func logout() {
+        
+        print("DEBUG: log out delegate test.")
+        
+        let alert = UIAlertController(title: nil,
+                                      message: "Are you sure to log out?",
+                                      preferredStyle: .actionSheet)
+        
+        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
+            print("=== DEBUG: Handle log user out..")
+            self.dismiss(animated: true) {
+                self.delegate?.logout()
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
     }
 }

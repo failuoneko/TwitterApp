@@ -22,12 +22,15 @@ class FeedController: UICollectionViewController {
         didSet { collectionView.reloadData() }
     }
     
-    private let smallProfileImageView: UIImageView = {
+    private lazy var smallProfileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 15
         imageView.layer.masksToBounds = true
         imageView.snp.makeConstraints{ $0.size.equalTo(30) }
+        let tap = UITapGestureRecognizer(target: self, action: #selector(smallProfileImageViewTapped))
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(tap)
         return imageView
     }()
     
@@ -80,6 +83,13 @@ class FeedController: UICollectionViewController {
     
     @objc func handelRefresh() {
         fetchTweets()
+    }
+    
+    @objc func smallProfileImageViewTapped() {
+        print("DEBUG: smallProfileImageViewTapped")
+        guard let user = user else { return }
+        let controller = ProfileController(user: user)
+        navigationController?.pushViewController(controller, animated: true)
     }
     
     
@@ -170,7 +180,7 @@ extension FeedController: TweetCellDelegate {
         }
     }
     
-    func fetchUser(withUsername username: String) {
+    func fetchUser(_ cell: TweetCell, withUsername username: String) {
         UserService.shared.fetchUser(withUsername: username) { user in
             print("DEBUG: user : [\(user.username)]")
             let controller = ProfileController(user: user)

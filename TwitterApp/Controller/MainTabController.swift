@@ -1,5 +1,5 @@
 //
-//  MainController.swift
+//  MainTabController.swift
 //  TwitterApp
 //
 //  Created by L on 2021/10/1.
@@ -62,14 +62,14 @@ class MainTabController: UITabBarController {
         }
     }
     
-    func logOut() {
-        do {
-            try Auth.auth().signOut()
-            print("DEBUG: log out")
-        } catch {
-            print("DEBUG: Error log out..:\(error.localizedDescription)")
-        }
-    }
+//    func logOut() {
+//        do {
+//            try Auth.auth().signOut()
+//            print("DEBUG: log out")
+//        } catch {
+//            print("DEBUG: Error log out..:\(error.localizedDescription)")
+//        }
+//    }
     
 
     

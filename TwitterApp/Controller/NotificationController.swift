@@ -32,8 +32,8 @@ class NotificationController: UITableViewController {
     // MARK: - Selectors
     
     @objc func handelRefresh() {
-//        print("do refresh")
-//        refreshControl?.endRefreshing()
+        //        print("do refresh")
+        //        refreshControl?.endRefreshing()
         fetchNotifications()
     }
     
@@ -53,16 +53,28 @@ class NotificationController: UITableViewController {
     }
     
     func checkIsUserFollowed(noifications: [Notification]) {
+        // 判斷通知是否為空。
+        guard !notifications.isEmpty else {
+            notificationsAlert()
+            return }
+        
         // 類型為follow才執行。
-        for (index, notification) in notifications.enumerated() {
-            if case .follow = notification.type {
-                let user = notification.user
-                
-                UserService.shared.checkIsFollowed(uid: user.uid) { isFollowed in
+        notifications.forEach { notification in
+            guard case .follow = notification.type else { return }
+            let user = notification.user
+            
+            UserService.shared.checkIsFollowed(uid: user.uid) { isFollowed in
+                if let index = self.notifications.firstIndex(where: { $0.user.uid == notification.user.uid }) {
                     self.notifications[index].user.isUserFollowed = isFollowed
                 }
             }
         }
+    }
+    
+    fileprivate func notificationsAlert() {
+        let alert = UIAlertController(title: "", message: "No Notifications", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     // MARK: - Helpers
@@ -92,7 +104,6 @@ extension NotificationController {
             let controller = TweetController(tweet: tweet)
             self.navigationController?.pushViewController(controller, animated: true)
         }
-//        print("DEBUG: tweet id : \(notification.tweetID)")
     }
 }
 
@@ -118,7 +129,6 @@ extension NotificationController: NotificationCellDelegate {
     func tapFollow(_ cell: NotificationCell) {
         
         guard let user = cell.notification?.user else { return }
-//        print("DEBUG: use is followed : \(user.isUserFollowed)")
         
         if user.isUserFollowed {
             UserService.shared.unfollowUser(uid: user.uid) { error, ref in
@@ -129,7 +139,6 @@ extension NotificationController: NotificationCellDelegate {
                 cell.notification?.user.isUserFollowed = true
             }
         }
-        
     }
     
     func tapProfileImage(_ cell: NotificationCell) {

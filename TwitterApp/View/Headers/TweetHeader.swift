@@ -10,7 +10,8 @@ import ActiveLabel
 
 protocol TweetHeaderDelegate: AnyObject {
     func showActionSheet()
-    func fetchUser(withUsername username: String)
+    func fetchUser(_ header: TweetHeader, withUsername username: String)
+    func replyTapped()
 }
 
 class TweetHeader: UICollectionReusableView {
@@ -190,7 +191,7 @@ class TweetHeader: UICollectionReusableView {
     }
     
     @objc func commentButtonTapped() {
-        
+        delegate?.replyTapped()
     }
     
     @objc func retweetButtonTapped() {
@@ -287,11 +288,12 @@ class TweetHeader: UICollectionReusableView {
     func configureMention() {
         captionLabel.handleMentionTap { username in
             print("DEBUG: metioned user : [\(username)]")
-            self.delegate?.fetchUser(withUsername: username)
+            self.delegate?.fetchUser(self, withUsername: username)
         }
         
-        replyToUserLabel.handleMentionTap { mention in
-            print("DEBUG: metioned user : [\(mention)]")
+        replyToUserLabel.handleMentionTap { username in
+            print("DEBUG: replyToUserLabel metioned user : [\(username)]")
+            self.delegate?.fetchUser(self, withUsername: username)
         }
         
     }

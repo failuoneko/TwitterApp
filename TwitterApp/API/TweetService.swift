@@ -158,9 +158,6 @@ struct TweetService {
                     completion(replies)
                 }
             }
-            
-            print("DEBUG: TweetKey = [\(tweetKey)]")
-            print("DEBUG: ReplyKey = [\(replayKey)]")
         }
     }
     

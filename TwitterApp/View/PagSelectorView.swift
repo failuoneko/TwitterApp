@@ -62,17 +62,6 @@ class PagSelectorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
-    // MARK: - Selectors
-    
-    
-    
-    // MARK: - Helpers
-    
-    func configureUI() {
-    }
-    
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
@@ -101,7 +90,6 @@ extension PagSelectorView: UICollectionViewDelegate {
         UIView.animate(withDuration: 0.3) {
             self.underlineView.frame.origin.x = xPosition
         }
-        print("DEBUG: delegate action to profile header from page bar")
         delegate?.pagSelectorView(self, didSelect: indexPath.row)
     }
 }

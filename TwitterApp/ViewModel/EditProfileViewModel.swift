@@ -38,7 +38,7 @@ struct EditProfileViewModel {
     }
     
     var shouldHidePlaceholderLabel: Bool {
-        return user.bio != nil
+        return user.bio != ""
     }
     
     var titleText: String {

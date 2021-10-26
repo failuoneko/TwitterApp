@@ -24,8 +24,6 @@ struct Notification {
     
     init(user: User, dictionary: [String: Any]) {
         self.user = user
-//        self.tweet = tweet
-//        self.tweetID = dictionary["tweetID"] as? String ?? ""
         
         if let tweetID = dictionary["tweetID"] as? String {
             self.tweetID = tweetID
@@ -38,6 +36,5 @@ struct Notification {
         if let type = dictionary["type"] as? Int {
             self.type = NotificationType(rawValue: type)
         }
-        
     }
 }

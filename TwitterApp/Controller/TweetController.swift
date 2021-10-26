@@ -118,7 +118,15 @@ extension TweetController {
     }
 }
 
+// MARK: - TweetHeaderDelegate
+
 extension TweetController: TweetHeaderDelegate {
+    func replyTapped() {
+        let controller = PostTweetViewController(user: tweet.user, config: .reply(tweet))
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
     
     func showActionSheet() {
         if tweet.user.isCurrenUser {
@@ -132,7 +140,7 @@ extension TweetController: TweetHeaderDelegate {
         }
     }
     
-    func fetchUser(withUsername username: String) {
+    func fetchUser(_ header: TweetHeader, withUsername username: String) {
         UserService.shared.fetchUser(withUsername: username) { user in
             print("DEBUG: user : [\(user.username)]")
             let controller = ProfileController(user: user)

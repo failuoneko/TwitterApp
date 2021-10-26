@@ -26,9 +26,21 @@ struct NotificationService {
     }
     
     func fetchNotifications(completion: @escaping([Notification]) -> Void) {
-        var notifications: [Notification] = []
+        let notifications: [Notification] = []
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
+        // 判斷通知是否為空，為空時回傳空的Array。
+        REF_NOTIFICATIONS.child(uid).observeSingleEvent(of: .value) { snapshot in
+            if !snapshot.exists() {
+                completion(notifications)
+            } else {
+                self.fetchNotifications(uid: uid, completion: completion)
+            }
+        }
+    }
+    
+    fileprivate func fetchNotifications(uid: String, completion: @escaping([Notification]) -> Void) {
+        var notifications: [Notification] = []
         REF_NOTIFICATIONS.child(uid).observe(.childAdded) { snapshot in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             guard let uid = dictionary["uid"] as? String else { return }
@@ -39,7 +51,6 @@ struct NotificationService {
                 completion(notifications)
             }
         }
-        
     }
     
 }

@@ -19,7 +19,6 @@ struct Tweet {
     
     var isReply: Bool { return replyingToUser != nil}
     
-    
     init(user: User, tweetID: String, dictionary: [String: Any]) {
         self.user = user
         self.tweetID = tweetID

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ProfileController: UICollectionViewController {
     
@@ -76,23 +77,20 @@ class ProfileController: UICollectionViewController {
     // 初始Tweets頁面。
     func fetchUserTweets() {
         TweetService.shared.fetchUserTweets(forUser: user) { tweets in
-            self.tweets = tweets
+            self.tweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
             self.collectionView.reloadData()
         }
     }
     
     func fetchLikedTweets() {
         TweetService.shared.fetchLikes(forUser: user) { tweets in
-            self.likedTweets = tweets
+            self.likedTweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
         }
     }
     
     func fetchUserReplies() {
         TweetService.shared.fetchUserReplies(forUSer: user) { tweets in
-            self.replies = tweets
-//            self.replies.forEach { reply in
-//                print("DEBUG: replying to [\(reply.replyingToUser)]")
-//            }
+            self.replies = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
         }
     }
     
@@ -132,7 +130,13 @@ class ProfileController: UICollectionViewController {
 extension ProfileController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-        return CGSize(width: view.frame.width, height: 350)
+        var height: CGFloat = 330
+        
+        if user.bio != nil {
+            height += 50
+        }
+        
+        return CGSize(width: view.frame.width, height: height)
         
     }
     
@@ -156,6 +160,7 @@ extension ProfileController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TweetCell.id, for: indexPath) as! TweetCell
         cell.tweet = currentData[indexPath.row]
+        cell.delegate = self
         return cell
     }
 }
@@ -232,9 +237,65 @@ extension ProfileController: ProfileHeaderDelegate {
 // MARK: - EditProfileControllerDelegate
 
 extension ProfileController: EditProfileControllerDelegate {
+    
     func controller(_ controller: EditProfileController, handleUpdate user: User) {
         controller.dismiss(animated: true, completion: nil)
         self.user = user
         self.collectionView.reloadData()
     }
+    
+    func logout() {
+        do {
+            print("DEBUG: log out")
+            try Auth.auth().signOut()
+            let controller = LoginController()
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true, completion: nil)
+        } catch {
+            print("DEBUG: Error log out..:\(error.localizedDescription)")
+        }
+    }
 }
+
+// MARK: - TweetCellDelegate
+
+extension ProfileController: TweetCellDelegate {
+    
+    func profileImageViewTapped(_ cell: TweetCell) {
+        guard let user = cell.tweet?.user else { return }
+        let controller = ProfileController(user: user)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    func replyTapped(_ cell: TweetCell) {
+        guard let tweet = cell.tweet else { return }
+        let controller = PostTweetViewController(user: tweet.user, config: .reply(tweet))
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+    
+    func likeTapped(_ cell: TweetCell) {
+        guard let tweet = cell.tweet else { return }
+        TweetService.shared.likeTweet(tweet: tweet) { error, ref in
+            cell.tweet?.didLike.toggle()
+            let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+            cell.tweet?.likes = likes
+            
+            // 只有點讚時才發送通知。
+            guard !tweet.didLike else { return }
+            NotificationService.shared.postNotification(user: tweet.user, tweetID: tweet.tweetID, type: .like)
+        }
+    }
+    
+    func fetchUser(_ cell: TweetCell, withUsername username: String) {
+        UserService.shared.fetchUser(withUsername: username) { user in
+            print("DEBUG: user : [\(user.username)]")
+            let controller = ProfileController(user: user)
+            self.navigationController?.pushViewController(controller, animated: true)
+        }
+    }
+    
+}
+

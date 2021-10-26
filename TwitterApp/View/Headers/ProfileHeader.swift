@@ -85,13 +85,11 @@ class ProfileHeader: UICollectionReusableView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 3
-        label.text = "This is just sample profile :)"
         return label
     }()
     
     private let followingLabel: UILabel = {
         let label = UILabel()
-        label.text = "0 following"
         let tap = UITapGestureRecognizer(target: self, action: #selector(followingLabelTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(tap)
@@ -100,7 +98,7 @@ class ProfileHeader: UICollectionReusableView {
     
     private let followersLabel: UILabel = {
         let label = UILabel()
-        label.text = "0 followers"
+//        label.text = "0 followers"
         let tap = UITapGestureRecognizer(target: self, action: #selector(followersLabelTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(tap)
@@ -150,9 +148,10 @@ class ProfileHeader: UICollectionReusableView {
         editProfileFollowButton.setTitle(viewModel.editProfileFollowButtonTitle, for: .normal)
         followingLabel.attributedText = viewModel.followingString
         followersLabel.attributedText = viewModel.followersString
-        
-        fullnameLabel.text = user.fullname
         usernameLabel.text = viewModel.usernameText
+
+        fullnameLabel.text = user.fullname
+        bioLabel.text = user.bio
         
     }
     
@@ -186,7 +185,7 @@ class ProfileHeader: UICollectionReusableView {
         let userInfoStack = UIStackView(arrangedSubviews: [fullnameLabel, usernameLabel, bioLabel])
         userInfoStack.axis = .vertical
         userInfoStack.distribution = .fillProportionally
-        userInfoStack.spacing = 4
+        userInfoStack.spacing = 10
         
         addSubview(userInfoStack)
         userInfoStack.snp.makeConstraints { make in
@@ -225,11 +224,5 @@ extension ProfileHeader: PagSelectorViewDelegate {
         
         delegate?.didSelect(page: page)
         
-//        guard let cell = view.collectionView.cellForItem(at: indexPath) else { return }
-//
-//        let xPosition = cell.frame.origin.x
-//        UIView.animate(withDuration: 0.3) {
-//            self.underlineView.frame.origin.x = xPosition
-//        }
     }
 }

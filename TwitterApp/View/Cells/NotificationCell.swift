@@ -37,7 +37,8 @@ class NotificationCell: UITableViewCell {
     
     private lazy var followButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Loading", for: .normal)
+//        button.setTitle("Loading", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 10)
         button.setTitleColor(.customBlue, for: .normal)
         button.backgroundColor = .white
         button.layer.borderColor = UIColor.customBlue.cgColor
@@ -49,7 +50,7 @@ class NotificationCell: UITableViewCell {
     let notificationLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.text = "Notification Text message."
         return label
     }()
@@ -111,10 +112,10 @@ class NotificationCell: UITableViewCell {
         addSubview(followButton)
         followButton.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.width.equalTo(80)
-            make.height.equalTo(30)
+            make.width.equalTo(60)
+            make.height.equalTo(28)
             make.right.equalToSuperview().inset(12)
-            followButton.layer.cornerRadius = 30 / 2
+            followButton.layer.cornerRadius = 28 / 2
         }
         
     }

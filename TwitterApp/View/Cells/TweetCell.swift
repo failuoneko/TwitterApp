@@ -12,7 +12,7 @@ protocol TweetCellDelegate: AnyObject {
     func profileImageViewTapped(_ cell: TweetCell)
     func replyTapped(_ cell: TweetCell)
     func likeTapped(_ cell: TweetCell)
-    func fetchUser(withUsername username: String)
+    func fetchUser(_ cell: TweetCell, withUsername username: String)
 }
 
 class TweetCell: UICollectionViewCell {
@@ -67,45 +67,25 @@ class TweetCell: UICollectionViewCell {
     
     // comment/retweet/like/share
     private lazy var commentButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "bubble.left"), for: .normal)
-        button.clipsToBounds = true
-        button.imageView?.contentMode = .scaleAspectFill
-        button.tintColor = .darkGray
-        button.snp.makeConstraints{ $0.size.equalTo(20) }
+        let button = UIButton.creatButton(withImageName: "bubble.left")
         button.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var retweetButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "arrow.2.squarepath"), for: .normal)
-        button.clipsToBounds = true
-        button.imageView?.contentMode = .scaleAspectFill
-        button.tintColor = .darkGray
-        button.snp.makeConstraints{ $0.size.equalTo(20) }
+        let button = UIButton.creatButton(withImageName: "arrow.2.squarepath")
         button.addTarget(self, action: #selector(retweetButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var likeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "heart"), for: .normal)
-        button.clipsToBounds = true
-        button.imageView?.contentMode = .scaleAspectFill
-        button.tintColor = .darkGray
-        button.snp.makeConstraints{ $0.size.equalTo(20) }
+        let button = UIButton.creatButton(withImageName: "heart")
         button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var shareButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
-        button.clipsToBounds = true
-        button.imageView?.contentMode = .scaleAspectFill
-        button.tintColor = .darkGray
-        button.snp.makeConstraints{ $0.size.equalTo(20) }
+        let button = UIButton.creatButton(withImageName: "square.and.arrow.up")
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -218,11 +198,12 @@ class TweetCell: UICollectionViewCell {
     func configureMention() {
         captionLabel.handleMentionTap { username in
             print("DEBUG: go to user profile : [\(username)]")
-            self.delegate?.fetchUser(withUsername: username)
+            self.delegate?.fetchUser(self, withUsername: username)
         }
         
-        replyToUserLabel.handleMentionTap { mention in
-            print("DEBUG: replying to metion @ : [\(mention)]")
+        replyToUserLabel.handleMentionTap { username in
+            print("DEBUG: replying to metion @ : [\(username)]")
+            self.delegate?.fetchUser(self, withUsername: username)
         }
     }
     
