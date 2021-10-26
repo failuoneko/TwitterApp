@@ -105,9 +105,6 @@ class TweetHeader: UICollectionReusableView {
     
     private lazy var statsView: UIView = {
         let view = UIView()
-        
-//        view.backgroundColor = .red
-        
         let topDivider = UIView()
         topDivider.backgroundColor = .systemGroupedBackground
         view.addSubview(topDivider)
@@ -170,7 +167,6 @@ class TweetHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-//        backgroundColor = .white
         configureUI()
         configureMention()
         
@@ -195,15 +191,15 @@ class TweetHeader: UICollectionReusableView {
     }
     
     @objc func retweetButtonTapped() {
-        
+        print("DEBUG: retweetButtonTapped")
     }
     
     @objc func likeButtonTapped() {
-        
+        print("DEBUG: likeButtonTapped")
     }
     
     @objc func shareButtonTapped() {
-        
+        print("shareButtonTapped: likeButtonTapped")
     }
     
     // MARK: - Helpers
@@ -295,6 +291,5 @@ class TweetHeader: UICollectionReusableView {
             print("DEBUG: replyToUserLabel metioned user : [\(username)]")
             self.delegate?.fetchUser(self, withUsername: username)
         }
-        
     }
 }

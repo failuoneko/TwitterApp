@@ -19,8 +19,8 @@ class ProfileController: UICollectionViewController {
     }
     
     private var tweets: [Tweet] = []
-    private var likedTweets: [Tweet] = []
     private var replies: [Tweet] = []
+    private var likedTweets: [Tweet] = []
     
     // Tweets / Tweets&Replies / Likes 頁面切換。
     private var currentData: [Tweet] {
@@ -33,10 +33,6 @@ class ProfileController: UICollectionViewController {
             return likedTweets
         }
     }
-    
-    //    private var tweets: [Tweet] = [] {
-    //        didSet { collectionView.reloadData() }
-    //    }
     
     // MARK: - Lifecycle
     
@@ -67,30 +63,27 @@ class ProfileController: UICollectionViewController {
         navigationController?.navigationBar.barStyle = .black
     }
     
-    // MARK: - Selectors
-    
-    
-    
-    
     // MARK: - API
     
     // 初始Tweets頁面。
     func fetchUserTweets() {
         TweetService.shared.fetchUserTweets(forUser: user) { tweets in
             self.tweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
+            self.checkIsUserLikedTweets()
             self.collectionView.reloadData()
-        }
-    }
-    
-    func fetchLikedTweets() {
-        TweetService.shared.fetchLikes(forUser: user) { tweets in
-            self.likedTweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
         }
     }
     
     func fetchUserReplies() {
         TweetService.shared.fetchUserReplies(forUSer: user) { tweets in
             self.replies = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
+//            self.checkIsUserLikedTweetsTest()
+        }
+    }
+    
+    func fetchLikedTweets() {
+        TweetService.shared.fetchLikes(forUser: user) { tweets in
+            self.likedTweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
         }
     }
     
@@ -107,6 +100,31 @@ class ProfileController: UICollectionViewController {
             self.collectionView.reloadData()
             print("DEBUG: followers: \(follow.followers)")
             print("DEBUG: following: \(follow.following)")
+        }
+    }
+    
+    // 依序檢查，有按讚才繼續往下執行。
+    func checkIsUserLikedTweets() {
+        self.tweets.forEach { tweet in
+            TweetService.shared.checkIsUserLikedTweet(tweet) { didLike in
+                guard didLike == true else { return }
+                
+                if let index = self.tweets.firstIndex(where: { $0.tweetID == tweet.tweetID }) {
+                    self.tweets[index].didLike = true
+                }
+            }
+        }
+    }
+    
+    func checkIsUserLikedTweetsTest() {
+        self.replies.forEach { tweet in
+            TweetService.shared.checkIsUserLikedTweet(tweet) { didLike in
+                guard didLike == true else { return }
+                
+                if let index = self.replies.firstIndex(where: { $0.tweetID == tweet.tweetID }) {
+                    self.replies[index].didLike = true
+                }
+            }
         }
     }
     
@@ -168,7 +186,6 @@ extension ProfileController {
 // MARK: - UICollectionViewDelegate
 
 extension ProfileController {
-    // 設置 reuse 的 section 的 header 或 footer
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfileHeader.id, for: indexPath) as! ProfileHeader
         header.user = user
@@ -198,7 +215,6 @@ extension ProfileController: ProfileHeaderDelegate {
     func editProfileFollow(_ header: ProfileHeader) {
         
         if user.isCurrenUser {
-//            print("DEBUG: show edit profile controller")
             let controller = EditProfileController(user: user)
             controller.delegate = self
             let nav = UINavigationController(rootViewController: controller)
@@ -212,16 +228,14 @@ extension ProfileController: ProfileHeaderDelegate {
             UserService.shared.unfollowUser(uid: user.uid) { error, ref in
                 self.user.isUserFollowed = false
                 self.collectionView.reloadData()
-                //                header.editProfileFollowButton.setTitle("Follow", for: .normal)
             }
         } else {
             // 未追蹤時追蹤。
             UserService.shared.followUser(uid: user.uid) { error, ref in
                 self.user.isUserFollowed = true
                 self.collectionView.reloadData()
-                //                header.editProfileFollowButton.setTitle("Following", for: .normal)
                 
-                #warning("被追蹤時收到通知")
+                // 被追蹤時收到通知
                 NotificationService.shared.postNotification(user: self.user, type: .follow)
                 
             }
@@ -246,7 +260,6 @@ extension ProfileController: EditProfileControllerDelegate {
     
     func logout() {
         do {
-            print("DEBUG: log out")
             try Auth.auth().signOut()
             let controller = LoginController()
             let nav = UINavigationController(rootViewController: controller)

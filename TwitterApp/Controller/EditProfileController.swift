@@ -227,22 +227,17 @@ extension EditProfileController: EditProfileCellDelegate {
 // MARK: - EditProfileFooterDelegate
 
 extension EditProfileController: EditProfileFooterDelegate {
+    
     func logout() {
-        
-        print("DEBUG: log out delegate test.")
-        
-        let alert = UIAlertController(title: nil,
-                                      message: "Are you sure to log out?",
-                                      preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: nil, message: "Are you sure to log out?", preferredStyle: .actionSheet)
         
         alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
-            print("=== DEBUG: Handle log user out..")
             self.dismiss(animated: true) {
                 self.delegate?.logout()
             }
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }

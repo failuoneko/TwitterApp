@@ -23,7 +23,6 @@ struct TweetService {
         
         switch type {
         case .tweet:
-            //        REF_TWEETS.childByAutoId().updateChildValues(values, withCompletionBlock: completion)
             
             // 推文上傳後，推文ID上傳到"user_tweets"。
             REF_TWEETS.childByAutoId().updateChildValues(values) { error, ref in
@@ -31,6 +30,7 @@ struct TweetService {
                 REF_USER_TWEETS.child(uid).updateChildValues([tweetID: 1], withCompletionBlock: completion)
             }
         case .reply(let tweet):
+            
             // 回覆時獲取該User的username。
             values["replyingToUser"] = tweet.user.username
             
@@ -45,6 +45,7 @@ struct TweetService {
     func likeTweet(tweet: Tweet, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+        
         REF_TWEETS.child(tweet.tweetID).child("likes").setValue(likes)
         
         if tweet.didLike {
@@ -88,19 +89,6 @@ struct TweetService {
                 completion(tweets)
             }
         }
-        
-//        REF_TWEETS.observe(.childAdded) { snapshot in
-//            guard let dictionary = snapshot.value as? [String: Any] else { return }
-//            guard let uid = dictionary["uid"] as? String else { return }
-//            let tweetID = snapshot.key
-//
-//            // 到tweet獲取uid，再用uid獲取user結構裡對應的用戶。
-//            UserService.shared.fetchUser(uid: uid) { user in
-//                let tweet = Tweet(user: user, tweetID: tweetID, dictionary: dictionary)
-//                tweets.append(tweet)
-//                completion(tweets)
-//            }
-//        }
     }
     
     func fetchUserTweets(forUser user: User, completion: @escaping([Tweet]) -> Void) {
@@ -115,18 +103,6 @@ struct TweetService {
                 tweets.append(tweet)
                 completion(tweets)
             }
-            
-            //            // 重構
-            //            REF_TWEETS.child(tweetID).observeSingleEvent(of: .value) { snapshot in
-            //                guard let dictionary = snapshot.value as? [String: Any] else { return }
-            //                guard let uid = dictionary["uid"] as? String else { return }
-            //                UserService.shared.fetchUser(uid: uid) { user in
-            //                    let tweet = Tweet(user: user, tweetID: tweetID, dictionary: dictionary)
-            //                    tweets.append(tweet)
-            //                    completion(tweets)
-            //                }
-            //            }
-            
         }
     }
     

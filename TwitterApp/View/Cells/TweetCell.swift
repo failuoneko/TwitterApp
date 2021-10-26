@@ -33,11 +33,6 @@ class TweetCell: UICollectionViewCell {
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 12)
         label.mentionColor = .customBlue
-
-//        label.text = " replying to @username"
-//        let tap = UITapGestureRecognizer(target: self, action: #selector())
-//        label.addGestureRecognizer(tap)
-//        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -47,8 +42,6 @@ class TweetCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.mentionColor = .customBlue
         label.hashtagColor = .customBlue
-//        label.backgroundColor = .blue
-//        label.text = "test caption"
         return label
     }()
     

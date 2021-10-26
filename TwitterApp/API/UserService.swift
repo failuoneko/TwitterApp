@@ -12,8 +12,6 @@ class UserService {
     
     func fetchUser(uid: String, completion: @escaping (User) -> Void) {
         
-//        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
         REF_USERS.child(uid).observeSingleEvent(of: .value) { snapshot in
             
             guard let dictionary = snapshot.value as? [String: Any] else { return }
@@ -40,8 +38,6 @@ class UserService {
         REF_USER_FOLLOWING.child(currentUid).updateChildValues([uid: 1]) { error, ref in
             REF_USER_FOLLOWERS.child(uid).updateChildValues([currentUid: 1], withCompletionBlock: completion)
         }
-//        print("DEBUG: current uid \(currentUid) started following \(uid)")
-//        print("DEBUG: uid \(uid) gained \(currentUid) as a follower")
     }
     
     
@@ -55,7 +51,6 @@ class UserService {
     func checkIsFollowed(uid: String, completion: @escaping(Bool) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         REF_USER_FOLLOWING.child(currentUid).child(uid).observeSingleEvent(of: .value) { snapshot in
-//            print("DEBUG: User is followed is \(snapshot.exists())")
             completion(snapshot.exists())
         }
     }

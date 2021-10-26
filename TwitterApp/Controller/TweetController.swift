@@ -45,9 +45,6 @@ class TweetController: UICollectionViewController {
         navigationController?.navigationBar.barStyle = .black
     }
 
-    // MARK: - Selectors
-
-
     // MARK: - API
     
     func fetchReplies() {
@@ -64,7 +61,6 @@ class TweetController: UICollectionViewController {
         
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: TweetCell.id)
         collectionView.register(TweetHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TweetHeader.id)
-//        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: TweetCell.id)
     }
     
     fileprivate func showActionSheetMethod(forUser user: User) {
@@ -109,7 +105,6 @@ extension TweetController {
 // MARK: - UICollectionViewDelegate
 
 extension TweetController {
-    // 設置 reuse 的 section 的 header 或 footer
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TweetHeader.id, for: indexPath) as! TweetHeader
         header.tweet = tweet
@@ -157,11 +152,11 @@ extension TweetController: ActionSheetAlertDelegate {
         switch option {
         case .follow(let user):
             UserService.shared.followUser(uid: user.uid) { error, ref in
-                print("DEBUG: Did follow user :\(user.username)")
+                print("DEBUG: Did follow user :[\(user.username)]")
             }
         case .unfollow(let user):
             UserService.shared.unfollowUser(uid: user.uid) { error, ref in
-                print("DEBUG: Did unfollow user :\(user.username)")
+                print("DEBUG: Did unfollow user :[\(user.username)]")
             }
         case .report:
             print("DEBUG: Report tweet")
