@@ -54,6 +54,7 @@ class FeedController: UICollectionViewController {
     // MARK: - API
     
     func fetchTweets() {
+        
         collectionView.refreshControl?.beginRefreshing()
         TweetService.shared.fetchTweets { tweets in
             // 顯示貼文，最新推文顯示在最上面。

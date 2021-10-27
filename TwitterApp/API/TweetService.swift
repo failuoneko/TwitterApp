@@ -45,8 +45,13 @@ struct TweetService {
     func likeTweet(tweet: Tweet, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
-        
-        REF_TWEETS.child(tweet.tweetID).child("likes").setValue(likes)
+            
+        if tweet.isReply {
+            print("DEBUG: is reply like")
+        } else {
+            REF_TWEETS.child(tweet.tweetID).child("likes").setValue(likes)
+            print("DEBUG: is not reply like")
+        }
         
         if tweet.didLike {
             // unlike tweet

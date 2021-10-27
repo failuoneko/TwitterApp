@@ -49,10 +49,6 @@ class ExploreController: UITableViewController {
         }
     }
     
-    
-    // MARK: - Selectors
-    
-    
     // MARK: - Helpers
     
     func configureUI() {
@@ -71,11 +67,6 @@ class ExploreController: UITableViewController {
         searchController.hidesNavigationBarDuringPresentation = false // 是否隱藏導航欄
         searchController.searchBar.placeholder = "Search for a user"
         definesPresentationContext = false // 是否跟隨view滑動
-        
-//        if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
-//            textField.textColor = .systemPurple
-//            textField.backgroundColor = .white
-//        }
     }
 }
 

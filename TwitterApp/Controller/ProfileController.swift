@@ -71,13 +71,14 @@ class ProfileController: UICollectionViewController {
             self.tweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
             self.checkIsUserLikedTweets()
             self.collectionView.reloadData()
+
         }
     }
     
     func fetchUserReplies() {
         TweetService.shared.fetchUserReplies(forUSer: user) { tweets in
             self.replies = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
-//            self.checkIsUserLikedTweetsTest()
+
         }
     }
     
@@ -85,6 +86,7 @@ class ProfileController: UICollectionViewController {
         TweetService.shared.fetchLikes(forUser: user) { tweets in
             self.likedTweets = tweets.sorted{ $0.timestamp ?? Date() > $1.timestamp ?? Date() }
         }
+
     }
     
     func checkIsfollowed() {
@@ -128,7 +130,6 @@ class ProfileController: UICollectionViewController {
         }
     }
     
-    
     // MARK: - Helpers
     
     func configureUI() {
@@ -140,7 +141,9 @@ class ProfileController: UICollectionViewController {
         // 滑到底部(增加底部空間 = tabBar高度)
         guard let tabHeight = tabBarController?.tabBar.frame.height else { return }
         collectionView.contentInset.bottom = tabHeight
+        
     }
+    
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout

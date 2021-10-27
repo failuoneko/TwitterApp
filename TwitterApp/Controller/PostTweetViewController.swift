@@ -59,13 +59,6 @@ class PostTweetViewController: UIViewController {
         configureUI()
         configureMention()
         
-//        switch config {
-//        case .tweet:
-//            print("DEBUG: cofing:tweet")
-//        case .reply(let tweet):
-//            print("DEBUG: Replying to \(tweet.caption)")
-//        }
-        
     }
     
     init(user: User, config: PostTweetConfiguration) {
@@ -100,8 +93,6 @@ class PostTweetViewController: UIViewController {
     @objc func cancel() {
         dismiss(animated: true, completion: nil)
     }
-    
-    // MARK: - API
     
     
     // MARK: - Helpers

@@ -184,14 +184,7 @@ extension EditProfileController: UIImagePickerControllerDelegate, UINavigationCo
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         guard let image = info[.editedImage] as? UIImage else { return }
-        //        self.addPhotoButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
         self.selectedImage = image
-        //
-        //        addPhotoButton.layer.borderColor = UIColor.white.cgColor
-        //        addPhotoButton.layer.borderWidth = 3
-        //        addPhotoButton.layer.cornerRadius = CGFloat(addPhotoButtonSize / 2)
-        //        addPhotoButton.imageView?.contentMode = .scaleAspectFill
-        //        addPhotoButton.imageView?.clipsToBounds = true
         print("DEBUG: update profile photo")
         dismiss(animated: true, completion: nil)
         
